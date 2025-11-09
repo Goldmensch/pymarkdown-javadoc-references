@@ -1,6 +1,7 @@
 import re
 from collections.abc import Callable
 from typing import cast
+import xml.etree.ElementTree as etree
 
 from ..reference import raw_pattern as ref_pattern
 from markdown.inlinepatterns import InlineProcessor
@@ -22,21 +23,22 @@ def _default_formatter(ref: Entity) -> str:
         case _:
             raise ValueError("Should not occur")
 
-def _compile_formatter(code: str) -> Callable[[Entity], str]:
+def _compile_formatter(code: str) -> Callable[[Entity], str | etree.Element]:
     namespace = {
         "Klass": Klass,
         "Method": Method,
         "Field": Field,
         "Entity": Entity,
-        "Type": Type
+        "Type": Type,
+        "etree": etree
     }
 
     indented = '\n'.join("  " + line for line in code.splitlines())
 
-    wrapper = f"def autolink_format(ref: Entity) -> str:  \n{indented}\n"
+    wrapper = f"def autolink_format(ref: Entity) -> str | etree.Element:  \n{indented}\n"
 
     exec(wrapper, namespace)
-    return cast(Callable[[Entity], str], namespace["autolink_format"])
+    return cast(Callable[[Entity], str | etree.Element], namespace["autolink_format"])
 
 auto_link_pattern: str = rf'<(?!init>)({ref_pattern})>'
 
@@ -53,10 +55,16 @@ class AutoLinkJavaDocProcessor(InlineProcessor):
         if ref is not None:
             try:
                 formatted = self.formatter(ref)
+
+                match formatted:
+                    case str():
+                        el.text = formatted
+                    case etree.Element():
+                        el.text = None
+                        el.append(formatted)
+
             except Exception as e:
                 logger.error(f"Error while evaluating autolink ({el.get('href')}): {e}")
-                formatted = el.get('href')
-
-            el.text = formatted
+                el.text = el.get('href')
 
         return el, m.start(0), m.end(0)

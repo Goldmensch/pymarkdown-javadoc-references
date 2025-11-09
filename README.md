@@ -67,8 +67,8 @@ To configure how the text is derived, you can provide a small python script via 
 In this environment, you can use the `ref` variable to get the resolved [reference entity](src/markdown_javadoc_references/entities.py).
 Now you can just use a `match` construct to define the specific formatting for each entity type.
 
-The provided code then should just `return` the string presented to the user. 
-The (class) names `Klass`, `Field`, `Method` and `Type` are automatically imported for you. Please take a look at the [source code](src/markdown_javadoc_references/entities.py)
+The provided code then should just `return` the string presented to the user or an `xml.etree.ElementTree.Element` instance.
+The (class) names `Klass`, `Field`, `Method`, `Type` and `etree` (which is `xml.etree.ElementTree`) are automatically imported for you. Please take a look at the [source code](src/markdown_javadoc_references/entities.py)
 to learn more about the data and utility functions of each entity. You need some basic python programming skills to do this (or just ask ChatGPT).
 
 > [!NOTE]
@@ -83,6 +83,23 @@ match ref:
         return f'{ref.klass.name}#{ref.name}'
     case Method():
         return f'{ref.klass.name}#{ref.name}({ref.parameter_names_joined()})'
+```
+
+Example (default formatter with reference texts as code blocks; etree):
+```python 
+name = None
+
+match ref:
+    case Klass():
+        name = f"@{ref.name}" if ref.type == Type.ANN_INTERFACE else ref.name
+    case Field():
+        name = f'{ref.klass.name}#{ref.name}'
+    case Method():
+        name = f'{ref.klass.name}#{ref.name}({ref.parameter_names_joined()})'
+        
+code = etree.Element('code')
+code.text = name
+return code
 ```
 
 Or in the `mkdocs.yml`:

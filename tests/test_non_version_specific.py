@@ -27,7 +27,7 @@ def test_autolink_annotation():
     expected = '<p><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/annotation/Retention.html">@Retention</a></p>'
     compare(expected, "<java.lang.annotation.Retention>")
 
-def test_autolink_only_class_with_package_custom_formatter():
+def test_autolink_only_class_with_package_custom_formatter_str():
     autolink_format = """   
     match ref:
         case Klass():
@@ -35,6 +35,18 @@ def test_autolink_only_class_with_package_custom_formatter():
     """
 
     expected = '<p><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html">java.lang.String</a></p>'
+    compare(expected, "<java.lang.String>", autolink_format=autolink_format)
+
+def test_autolink_only_class_with_package_custom_formatter_etree():
+    autolink_format = """   
+    match ref:
+        case Klass():
+            code = etree.Element('code')
+            code.text = f'{ref.package}.{ref.name}'
+            return code
+    """
+
+    expected = '<p><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html"><code>java.lang.String</code></a></p>'
     compare(expected, "<java.lang.String>", autolink_format=autolink_format)
 
 def test_autolink_with_parameters():
