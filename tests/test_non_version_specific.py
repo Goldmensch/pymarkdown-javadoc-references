@@ -186,9 +186,13 @@ def test_type_old_specific():
     compare(expected, "<String>", urls=urls)
 
 def test_file_origin():
+    base_path = os.path.abspath(".")
+    if not base_path.endswith('tests'):
+        base_path  += '/tests'
+
     urls = [
-        "local_docs/jdk9/docs/javadoc"
+        base_path + '/local_docs/jdk9/docs/javadoc'
     ]
 
-    expected = f'<p><a href="{os.path.abspath(".")}/local_docs/jdk9/docs/javadoc/io.github.kaktushose.jdac.core/io/github/kaktushose/jdac/JDACBuilder.html">JDACBuilder</a></p>'
+    expected = f'<p><a href="{base_path}/local_docs/jdk9/docs/javadoc/io.github.kaktushose.jdac.core/io/github/kaktushose/jdac/JDACBuilder.html">JDACBuilder</a></p>'
     compare(expected, "<JDACBuilder>", urls=urls)
