@@ -1,7 +1,7 @@
 [project]
 name = "markdown_javadoc_references"
 description = "A Markdown extension that makes it easy to reference Javadocs"
-version = "0.5"
+version = "0.5.1"
 
 dependencies = [
     "requests",
