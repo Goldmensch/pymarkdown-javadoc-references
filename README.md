@@ -20,6 +20,7 @@ from markdown_javadoc_references import JavaDocRefExtension
 
 urls = [
     'https://docs.oracle.com/en/java/javase/24/docs/api/',
+    'my_project/javadocs',
     {
         'alias': 'jdk8',
         'url': 'https://docs.oracle.com/javase/8/docs/api/'
@@ -42,6 +43,12 @@ markdown_extensions:
           - alias: 'jdk8'
             url: 'https://docs.oracle.com/javase/8/docs/api/'
 ```
+
+> [!TIP]
+> You can also provide "urls" to local, file based javadoc sites. Just add the path to your config like `my_project/javdocs`.
+> It will be resolved relative to your execution location. (for example where you execute the "mkdocs build" cmd).
+> Please note that this should be only used locally to write documentation for new features. The resolved html links will link to
+> a file not some uploaded javadoc site!
 
 ## Usage
 Referencing java methods, classes or fields is similar to how it is done in normal (markdown) javadoc comments,
