@@ -22,6 +22,8 @@ def load(url: str) -> Docsite:
 
 def _read_url_json(url: str, prefix: str) -> list[dict[str, str]]:
     text = read_url(url)
+    if text is None:
+        return list()
     plain = text.removeprefix(prefix).removesuffix(';updateSearchResults();').strip()
     return json.loads(plain)
 
@@ -126,6 +128,8 @@ def _load_type(klass: Klass):
     logger.debug(f"Loading type for {klass.url}")
 
     text = read_url(klass.url)
+    if text is None:
+        return
     soup = BeautifulSoup(text, "html.parser")
 
     # find class type

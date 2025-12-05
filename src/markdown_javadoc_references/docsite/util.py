@@ -1,3 +1,5 @@
+from urllib.error import HTTPError
+
 import requests
 
 from markdown_javadoc_references.entities import Klass, Type
@@ -36,9 +38,15 @@ def make_session() -> requests.Session:
 
 session = make_session()
 
-def read_url(url: str) -> str:
+def read_url(url: str) -> str | None:
     resp = session.get(url)
-    resp.raise_for_status()
+
+    try:
+        resp.raise_for_status()
+    except HTTPError as err:
+        logger.warning(f"Couldn't open url {url}, got status code: {err.code} and message {err.reason}")
+        return None
+
     return resp.text
 
 

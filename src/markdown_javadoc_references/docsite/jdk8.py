@@ -10,11 +10,15 @@ from ..util import get_logger
 
 logger = get_logger(__name__)
 
-def load(url: str) -> Docsite:
+def load(url: str) -> Docsite | None:
     # info is intended
     logger.info(f'Loading java 8 docs.. may take a while: {url}')
 
-    soup = BeautifulSoup(read_url(f'{url}/allclasses-noframe.html'), 'html.parser')
+    text = read_url(f'{url}/allclasses-noframe.html')
+    if text is None:
+        return None
+
+    soup = BeautifulSoup(text, 'html.parser')
 
     klasses = dict()
 
@@ -44,8 +48,12 @@ def _load_members(klass: Klass):
     logger.debug(f"Loading members for: {klass}")
 
     text = read_url(klass.url)
+
     klass.methods = list()
     klass.fields = list()
+
+    if text is None:
+        return
 
     soup = BeautifulSoup(text, "html.parser")
     anchors = {a.get("name") for a in soup.find_all("a", attrs={"name": True})}

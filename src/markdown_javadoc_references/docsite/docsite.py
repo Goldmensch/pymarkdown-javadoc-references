@@ -6,7 +6,7 @@ import requests.exceptions
 from bs4 import BeautifulSoup
 
 from .util import check_url, read_url
-from ..entities import Klass
+from ..entities import Klass, Type
 from ..util import get_logger
 
 logger = get_logger(__name__)
@@ -38,6 +38,8 @@ class Docsite:
         def ensure_members(klass: Klass):
             if klass.type is None:
                 self._lazy_load(klass)
+            if klass.type is None: # if still None, error occurred -> set type to Class to not raise any errors
+                klass.type = Type.CLASS
             return klass
 
         found = list(executor.map(ensure_members, found))
@@ -81,6 +83,8 @@ def _resolve_special(url: str) -> str | None:
 
 def _resolve_javadocio_latest(stripped: str) -> str | None:
     text = read_url(stripped)
+    if text is None:
+        return None
     soup = BeautifulSoup(text, "html.parser")
     version_nav  = soup.findAll(attrs={'class': 'nav-link dropdown-toggle'})
     if len(version_nav) != 2:
