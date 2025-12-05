@@ -1,3 +1,4 @@
+import os.path
 from concurrent.futures import ThreadPoolExecutor
 from functools import lru_cache
 from typing import Callable
@@ -5,7 +6,7 @@ from typing import Callable
 import requests.exceptions
 from bs4 import BeautifulSoup
 
-from .util import check_url, read_url
+from .util import check_url, read_url, is_file
 from ..entities import Klass, Type
 from ..util import get_logger
 
@@ -78,6 +79,8 @@ def _resolve_special(url: str) -> str | None:
             if stripped is None:
                 return None
         return stripped.replace('/doc/', '/static/', 1)
+    if is_file(url):
+        return os.path.abspath(url)
 
     return url
 

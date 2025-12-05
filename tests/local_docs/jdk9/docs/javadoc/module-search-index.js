@@ -1,0 +1,1 @@
+moduleSearchIndex = [{"l":"io.github.kaktushose.jdac.core"}];updateSearchResults();

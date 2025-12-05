@@ -1,3 +1,5 @@
+import os.path
+
 import markdown
 from markdown_javadoc_references import JavaDocRefExtension
 
@@ -182,3 +184,11 @@ def test_type_old_specific():
 
     expected = '<p><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a></p>'
     compare(expected, "<String>", urls=urls)
+
+def test_file_origin():
+    urls = [
+        "local_docs/jdk9/docs/javadoc"
+    ]
+
+    expected = f'<p><a href="{os.path.abspath(".")}/local_docs/jdk9/docs/javadoc/io.github.kaktushose.jdac.core/io/github/kaktushose/jdac/JDACBuilder.html">JDACBuilder</a></p>'
+    compare(expected, "<JDACBuilder>", urls=urls)

@@ -1,3 +1,4 @@
+import os.path
 from urllib.error import HTTPError
 
 import requests
@@ -39,6 +40,10 @@ def make_session() -> requests.Session:
 session = make_session()
 
 def read_url(url: str) -> str | None:
+    if is_file(url):
+        with open(url, "r") as file:
+            return file.read()
+
     resp = session.get(url)
 
     try:
@@ -51,6 +56,11 @@ def read_url(url: str) -> str | None:
 
 
 def check_url(url: str) -> requests.Response:
+    if is_file(url):
+        resp = requests.Response()
+        resp.status_code = 200 if os.path.exists(url) else 404
+        return resp
+
     resp = session.head(url)
     return resp
 
@@ -69,3 +79,6 @@ def find_class_type(text: str, klass: Klass) -> Type | None:
         case _:
             logger.error(f"Unknown class type in title {text} of {klass.url}")
             return None
+
+def is_file(url: str) -> bool:
+    return not url.startswith("http")
