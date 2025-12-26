@@ -1,5 +1,5 @@
 import os.path
-from urllib.error import HTTPError
+from requests.exceptions import HTTPError
 
 import requests
 
@@ -49,7 +49,7 @@ def read_url(url: str) -> str | None:
     try:
         resp.raise_for_status()
     except HTTPError as err:
-        logger.warning(f"Couldn't open url {url}, got status code: {err.code} and message {err.reason}")
+        logger.warning(f"Couldn't open url {url}, got status code: {err.response.status_code}")
         return None
 
     return resp.text
