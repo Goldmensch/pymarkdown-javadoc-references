@@ -128,6 +128,10 @@ class Resolver:
                 el.text = f'Invalid reference to {ref}'
             else:
                 link, ref = next(iter(links.items()))
+
+                if not link.startswith('http'):
+                    link = f"file://{link}"
+
                 el.set('href', link)
                 return ref, el
         else:
